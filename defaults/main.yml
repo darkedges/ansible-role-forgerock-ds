@@ -4,8 +4,8 @@
 frds_staging_dir: /tmp/staging
 frds_default_password: "Passw0rd"
 frds_install_file: DS-eval-6.5.0.zip
-frds_fr_user: fr
-frds_fr_group: fr
+frds_fr_user: forgerock
+frds_fr_group: forgerock
 frds_install_path: /opt/ois/frds
 frds_instance_path: /var/config/frds
 
@@ -80,7 +80,7 @@ frds_rs_config_root_user_password_file: ""
 frds_rs_config_root_user_password: "{{ frds_default_password }}"
 frds_rs_config_secure_replication: true
 frds_rs_config_skip_port_check: false
-frds_rs_config_start_server: false
+frds_rs_config_start_server: true
 frds_rs_config_trust_all: false
 frds_rs_config_truststore_password_file: ""
 frds_rs_config_truststore_password: ""
@@ -152,7 +152,7 @@ frds_ds_config_root_user_password: "{{ frds_default_password }}"
 frds_ds_config_sample_data: -1
 frds_ds_config_skip_file: ""
 frds_ds_config_skip_port_check: false
-frds_ds_config_start_server: false
+frds_ds_config_start_server: true
 frds_ds_config_use_jceks_keystore: ""
 frds_ds_config_use_jks_keystore: ""
 frds_ds_config_use_pkcs11_keystore: ""

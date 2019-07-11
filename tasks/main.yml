@@ -1,38 +1,38 @@
 ---
 
-- name: create replication agreement for dsmaster
-  frds_replication:
-    admin_password: "Passw0rd"
-    base_dn:  
-      - "ou=identities"
-      - "ou=am-config"
-      - "ou=tokens"
-    directory_server_admin_port: 1444 
-    directory_server_bind_password: "{{ frds_default_password }}"
-    directory_server_hostname: "{{ frds_ds_config_hostname }}"
-    frds_bin_dir: "/opt/ois/frds/rsmaster/bin"
-    replication_server_admin_port: 3444
-    replication_server_bind_password: "{{ frds_default_password }}"
-    replication_server_hostname: "{{ frds_rs_config_hostname }}"
-    replication_server_replication_port: 3989
-    state: present
+# - name: create replication agreement for dsmaster
+#   frds_replication:
+#     admin_password: "Passw0rd"
+#     base_dn:  
+#       - "ou=identities"
+#       - "ou=am-config"
+#       - "ou=tokens"
+#     directory_server_admin_port: 1444 
+#     directory_server_bind_password: "{{ frds_default_password }}"
+#     directory_server_hostname: "{{ frds_ds_config_hostname }}"
+#     frds_bin_dir: "/opt/ois/frds/rsmaster/bin"
+#     replication_server_admin_port: 3444
+#     replication_server_bind_password: "{{ frds_default_password }}"
+#     replication_server_hostname: "{{ frds_rs_config_hostname }}"
+#     replication_server_replication_port: 3989
+#     state: present
 
-- name: create replication agreement for dsreplica
-  frds_replication:
-    admin_password: "Passw0rd"
-    base_dn:   
-      - "ou=identities"
-      - "ou=am-config"
-      - "ou=tokens"
-    directory_server_admin_port: 2444 
-    directory_server_bind_password: "{{ frds_default_password }}"
-    directory_server_hostname: "{{ frds_ds_config_hostname }}"
-    frds_bin_dir: "/opt/ois/frds/dsreplica/bin"
-    replication_server_admin_port: 4444
-    replication_server_bind_password: "{{ frds_default_password }}"
-    replication_server_hostname: "{{ frds_rs_config_hostname }}"
-    replication_server_replication_port: 4989
-    state: present
+# - name: create replication agreement for dsreplica
+#   frds_replication:
+#     admin_password: "Passw0rd"
+#     base_dn:   
+#       - "ou=identities"
+#       - "ou=am-config"
+#       - "ou=tokens"
+#     directory_server_admin_port: 2444 
+#     directory_server_bind_password: "{{ frds_default_password }}"
+#     directory_server_hostname: "{{ frds_ds_config_hostname }}"
+#     frds_bin_dir: "/opt/ois/frds/dsreplica/bin"
+#     replication_server_admin_port: 4444
+#     replication_server_bind_password: "{{ frds_default_password }}"
+#     replication_server_hostname: "{{ frds_rs_config_hostname }}"
+#     replication_server_replication_port: 4989
+#     state: present
 
 # - name: initialize all replication agreements
 #   frds_replication:
@@ -99,102 +99,102 @@
 #     - "ou=tokens"
 
 
-# - name: check if replication server is not amaster
-#   fail: 
-#     msg: "You must supply 'frds_rs_config_replication_server' details"
-#   when: "(frds_rs_config_replication_server | length == 0 and not frds_rs_config_replication_master )"
+- name: check if replication server is not amaster
+  fail: 
+    msg: "You must supply 'frds_rs_config_replication_server' details"
+  when: "(frds_rs_config_replication_server | length == 0 and not frds_rs_config_replication_master )"
 
-# # - name: check if replication server is not a master and have not based dn
-# #   fail: 
-# #     msg: "You must supply BaseDN details, when replication server is not a master"
-# #   when: "( 
-# #           (frds_rs_config_replication_server | length > 0 and not frds_rs_config_replication_master) 
-# #           and ( frds_rs_config_base_dns | length == 0 ) 
-# #         )"
-
-# - name: check if replication server is not a master and have necessary trust
+# - name: check if replication server is not a master and have not based dn
 #   fail: 
-#     msg: "You must supply trust details"
+#     msg: "You must supply BaseDN details, when replication server is not a master"
 #   when: "( 
 #           (frds_rs_config_replication_server | length > 0 and not frds_rs_config_replication_master) 
-#           and ( not frds_rs_config_trust_all and not frds_rs_config_use_jvm_truststore) 
+#           and ( frds_rs_config_base_dns | length == 0 ) 
 #         )"
 
-# - name: check if proxy server both frds_ps_config_proxy_using_start_tls and frds_ps_config_proxy_using_ssl are true
-#   fail: 
-#     msg: "You must supply either frds_ps_config_proxy_using_start_tls or frds_ps_config_proxy_using_ssl to be true"
-#   when: "( 
-#           frds_ps_config_proxy_using_ssl and frds_ps_config_proxy_using_start_tls 
-#         )"
+- name: check if replication server is not a master and have necessary trust
+  fail: 
+    msg: "You must supply trust details"
+  when: "( 
+          (frds_rs_config_replication_server | length > 0 and not frds_rs_config_replication_master) 
+          and ( not frds_rs_config_trust_all and not frds_rs_config_use_jvm_truststore) 
+        )"
 
-# - name: check if proxy server frds_ps_config_static_primary_server or frds_ps_config_replication_server is defined
-#   fail: 
-#     msg: "You must supply either frds_ps_config_static_primary_server or frds_ps_config_replication_server"
-#   when: "( 
-#           frds_ps_config_static_primary_server | length == 0  and frds_ps_config_replication_server | length == 0 
-#         )"
+- name: check if proxy server both frds_ps_config_proxy_using_start_tls and frds_ps_config_proxy_using_ssl are true
+  fail: 
+    msg: "You must supply either frds_ps_config_proxy_using_start_tls or frds_ps_config_proxy_using_ssl to be true"
+  when: "( 
+          frds_ps_config_proxy_using_ssl and frds_ps_config_proxy_using_start_tls 
+        )"
 
-# - name: Check if Proxy Server replication server enabled and correct bind details
-#   fail: 
-#     msg: "You must supply frds_ps_config_replication_bind_dn and frds_ps_config_replication_bind_password or frds_ps_config_replication_bind_password_file"
-#   when: "( 
-#           frds_ps_config_replication_server | length > 0 and ( frds_ps_config_replication_bind_dn | length > 0 and ( frds_ps_config_replication_bind_password | length == 0 and frds_ps_config_replication_bind_password_file | length == 0 ) )
-#         )"
+- name: check if proxy server frds_ps_config_static_primary_server or frds_ps_config_replication_server is defined
+  fail: 
+    msg: "You must supply either frds_ps_config_static_primary_server or frds_ps_config_replication_server"
+  when: "( 
+          frds_ps_config_static_primary_server | length == 0  and frds_ps_config_replication_server | length == 0 
+        )"
 
-# - name: Install required packages. This takes a while - be patient
-#   package: 
-#     name: "{{ item }}"
-#     state: latest
-#   with_items:
-#    - unzip
+- name: Check if Proxy Server replication server enabled and correct bind details
+  fail: 
+    msg: "You must supply frds_ps_config_replication_bind_dn and frds_ps_config_replication_bind_password or frds_ps_config_replication_bind_password_file"
+  when: "( 
+          frds_ps_config_replication_server | length > 0 and ( frds_ps_config_replication_bind_dn | length > 0 and ( frds_ps_config_replication_bind_password | length == 0 and frds_ps_config_replication_bind_password_file | length == 0 ) )
+        )"
 
-# - name: create top level software directories
-#   file: 
-#     path: "{{ item }}" 
-#     state: directory 
-#     owner: "{{ frds_fr_user }}" 
-#     group: "{{ frds_fr_group }}" 
-#     mode: 0755
-#   loop:
-#     - "{{ frds_install_path }}" 
-#     - "{{ frds_instance_path }}"
-#     - "{{ frds_staging_dir }}" 
+- name: Install required packages. This takes a while - be patient
+  package: 
+    name: "{{ item }}"
+    state: latest
+  with_items:
+   - unzip
 
-# - name: upload staging files
-#   copy:
-#     src: "{{ item.src }}"
-#     dest: "{{ item.dest }}"
-#     owner: "{{ frds_fr_user }}"
-#     group: "{{ frds_fr_group }}" 
-#     mode: 0755 
-#   loop:
-#     - src: "{{ frds_install_file }}"
-#       dest: "{{ frds_staging_dir }}/frds.zip" 
+- name: create top level software directories
+  file: 
+    path: "{{ item }}" 
+    state: directory 
+    owner: "{{ frds_fr_user }}" 
+    group: "{{ frds_fr_group }}" 
+    mode: 0755
+  loop:
+    - "{{ frds_install_path }}" 
+    - "{{ frds_instance_path }}"
+    - "{{ frds_staging_dir }}" 
 
-# - name: unarchive
-#   unarchive: 
-#     src: "{{ frds_staging_dir }}/frds.zip" 
-#     dest: "{{ frds_staging_dir }}" 
-#     copy: no      
-#     list_files: yes
-#     owner: "{{ frds_fr_user }}"
-#     creates: "{{ frds_staging_dir }}/setup"
-#   register: archive_contents
+- name: upload staging files
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ frds_fr_user }}"
+    group: "{{ frds_fr_group }}" 
+    mode: 0755 
+  loop:
+    - src: "{{ frds_install_file }}"
+      dest: "{{ frds_staging_dir }}/frds.zip" 
 
-# - include: "directory-server/install.yml"
-#   when: "( frds_install_operation == 'install' and frds_install_type == 'directory-server' )"
+- name: unarchive
+  unarchive: 
+    src: "{{ frds_staging_dir }}/frds.zip" 
+    dest: "{{ frds_staging_dir }}" 
+    copy: no      
+    list_files: yes
+    owner: "{{ frds_fr_user }}"
+    creates: "{{ frds_staging_dir }}/setup"
+  register: archive_contents
 
-# - include: "directory-server/configure.yml"
-#   when: "( frds_install_operation == 'configure' and frds_install_type == 'directory-server' )"
+- include: "directory-server/install.yml"
+  when: "( frds_install_operation == 'install' and frds_install_type == 'directory-server' )"
 
-# - include: "replication-server/install.yml"
-#   when: "( frds_install_operation == 'install' and frds_install_type == 'replication-server' )"
+- include: "directory-server/configure.yml"
+  when: "( frds_install_operation == 'configure' and frds_install_type == 'directory-server' )"
 
-# - include: "replication-server/configure.yml"
-#   when: "( frds_install_operation == 'configure' and frds_install_type == 'replication-server' )"
+- include: "replication-server/install.yml"
+  when: "( frds_install_operation == 'install' and frds_install_type == 'replication-server' )"
 
-# - include: "proxy-server/install.yml"
-#   when: "( frds_install_operation == 'install' and frds_install_type == 'proxy-server' )"
+- include: "replication-server/configure.yml"
+  when: "( frds_install_operation == 'configure' and frds_install_type == 'replication-server' )"
 
-# - include: "proxy-server/configure.yml"
-#   when: "( frds_install_operation == 'configure' and frds_install_type == 'proxy-server' )"
+- include: "proxy-server/install.yml"
+  when: "( frds_install_operation == 'install' and frds_install_type == 'proxy-server' )"
+
+- include: "proxy-server/configure.yml"
+  when: "( frds_install_operation == 'configure' and frds_install_type == 'proxy-server' )"
