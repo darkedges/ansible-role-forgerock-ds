@@ -1,0 +1,16 @@
+# Systemd startup for ForgeRock Directory Service
+[Unit]
+Description=OpenDJ
+After=remote-fs.target nss-lookup.target
+
+[Service]
+Type=forking
+ExecStart={{ frds_install_path }}/{{ frds_service_name }}/bin/start-ds --quiet
+ExecStop={{ frds_install_path }}/{{ frds_service_name }}/bin/stop-ds --quiet
+ExecReload={{ frds_install_path }}/{{ frds_service_name }}/bin/stop-ds --restart --quiet
+User={{ frds_user }}
+#Environment="JAVA_OPTS=-Djava.awt.headless=true -Xmx512M -XX:MaxPermSize=256m"
+#SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target

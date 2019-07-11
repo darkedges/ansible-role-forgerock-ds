@@ -1,0 +1,145 @@
+---
+
+- name: set base facts
+  set_fact:
+    frds_command_line_options: []
+
+- name: base configuration 
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ item ] }}"
+  loop:
+    - "--rootUserDN '{{ frds_ds_config_root_user_dn }}'"
+    - "--monitorUserDn '{{ frds_ds_config_monitor_user_dn }}'"
+    - "--hostname {{ frds_ds_config_hostname }}"
+    - "--ldapPort {{ frds_ds_config_ldap_port }}"
+    - "--ldapsPort {{ frds_ds_config_ldaps_port }}"
+    - "--httpPort {{ frds_ds_config_http_port }}"
+    - "--httpsPort {{ frds_ds_config_https_port }}"
+    - "--adminConnectorPort {{ frds_ds_config_admin_port }}"
+    - "--instancePath {{ frds_ds_config_instance_path }}"
+    - "--acceptLicense"
+
+- name: add BaseEntry
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--addBaseEntry' ]  }}"
+  when: "( frds_ds_config_add_base_entry )"
+
+- name: add Sample Data
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--sampleData ' + frds_ds_config_sample_data ]  }}"
+  when: "( frds_ds_config_sample_data > 0 )"
+
+- name: add import LDIF
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--ldifFile ' + item ]  }}"
+  loop: "{{ frds_ds_config_import_ldif_file }}"
+
+- name: add profiles
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--profile ' + item.profile + ':' + item.version]  }}"
+  loop: "{{ frds_ds_config_profiles }}"
+  when: "(  frds_ds_config_profiles_enabled )"
+
+- name: add profiles settings
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--set ' + item.0.profile + '/' + item.1.paramName + ':' + item.1.value ]  }}"
+  with_subelements: 
+   - "{{ frds_ds_config_profiles }}"
+   - settings
+  when: "(  frds_ds_config_profiles_enabled )"
+
+- name: add enableStartTls
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--enableStartTls' ]  }}"
+  when: "( frds_ds_config_enable_start_tls )"
+
+- name: add skipPortCheck
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--skipPortCheck' ]  }}"
+  when: "( not frds_ds_config_skip_port_check )"
+
+- name: add rejectFile
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--rejectFile ' + frds_ds_config_reject_file ]  }}"
+  when: "( frds_ds_config_reject_file | length > 0 )"
+
+- name: add skipFile
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--rejectFile ' + frds_ds_config_skip_file ]  }}"
+  when: "( frds_ds_config_skip_file | length > 0 )"
+
+- name: add certNickname
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--certNickname ' + item ]  }}"
+  loop: "{{ frds_ds_config_cert_nickname }}"
+
+# Common Configuration
+- name: add Base DN
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--baseDn ' + item ]  }}"
+  loop: "{{ frds_ds_config_base_dns }}"
+  when: "( not frds_ds_config_profiles_enabled )"
+
+- name: add Production Mode
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--productionMode' ]  }}"
+  when: "( frds_ds_config_production_mode )"
+
+- name: add doNotStart
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--doNotStart' ]  }}"
+  when: "( not frds_ds_config_start_server )"
+  
+- name: add rootUserPasswordFile
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--rootUserPasswordFile ' + frds_ds_config_root_user_password_file ]  }}"
+  when: "( frds_ds_config_root_user_password_file | length > 0 )"
+
+- name: add rootUserPassword
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--rootUserPassword '+ frds_ds_config_root_user_password ]  }}"
+  when: "( frds_ds_config_root_user_password | length > 0 and  frds_ds_config_root_user_password_file | length == 0 )"
+
+- name: add monitorUserPasswordFile
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--monitorUserPasswordFile ' + frds_ds_config_monitor_user_password_file ]  }}"
+  when: "( frds_ds_config_monitor_user_password_file | length > 0 )"
+
+- name: add monitorUserPassword
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--monitorUserPassword '+ frds_ds_config_monitor_user_password ]  }}"
+  when: "( frds_ds_config_monitor_user_password | length > 0 and  frds_ds_config_monitor_user_password_file | length == 0 )"
+
+- name: add keyStorePasswordFile
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--keyStorePasswordFile ' + frds_ds_config_keystore_password_file ]  }}"
+  when: "( frds_ds_config_keystore_password_file | length > 0 )"
+
+- name: add keyStorePassword
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--keyStorePassword '+ frds_ds_config_keystore_password ]  }}"
+  when: "( frds_ds_config_keystore_password | length > 0 and frds_ds_config_keystore_password_file | length == 0 )"
+
+- name: add useJavaKeyStore
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--useJavaKeyStore ' + frds_ds_config_keystore_password_file ]  }}"
+  when: "( frds_ds_config_use_jks_keystore | length > 0 )"
+
+- name: add useJceKeyStore
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--useJceKeyStore ' + frds_ds_config_use_jceks_keystore ]  }}"
+  when: "( frds_ds_config_use_jceks_keystore | length > 0 )"
+
+- name: add usePkcs11KeyStore
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--usePkcs11KeyStore ' + frds_ds_config_use_pkcs11_keystore ]  }}"
+  when: "( frds_ds_config_use_pkcs11_keystore | length > 0 )"
+
+- name: add usePkcs12KeyStore
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--usePkcs12KeyStore ' + frds_ds_config_use_pkcs12_keystore ]  }}"
+  when: "( frds_ds_config_use_pkcs12_keystore | length > 0 )"
+
+- name: add frds_command_line
+  set_fact:
+    frds_command_line: "{{ frds_command_line_options | join(' ') }}"

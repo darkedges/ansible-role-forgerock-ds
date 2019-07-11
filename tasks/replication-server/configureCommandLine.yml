@@ -1,0 +1,135 @@
+---
+
+- name: set base facts
+  set_fact:
+    frds_command_line_options: []
+
+- name: base configuration 
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ item ] }}"
+  loop:
+    - "--rootUserDN '{{ frds_rs_config_root_user_dn }}'"
+    - "--monitorUserDn '{{ frds_rs_config_monitor_user_dn }}'"
+    - "--hostname {{ frds_rs_config_hostname }}"
+    - "--httpPort {{ frds_rs_config_http_port }}"
+    - "--httpsPort {{ frds_rs_config_https_port }}"
+    - "--adminConnectorPort {{ frds_rs_config_admin_port }}"
+    - "--replicationPort {{ frds_rs_config_replication_port }}"
+    - "--instancePath {{ frds_rs_config_instance_path }}"
+    - "--acceptLicense"
+
+- name: add replicationServer
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--replicationServer ' + frds_rs_config_replication_server ]  }}"
+  when: "( frds_rs_config_replication_server | length > 0 )"
+
+- name: add secureReplication
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--secureReplication' ]  }}"
+  when: "( frds_rs_config_secure_replication and not frds_rs_config_production_mode)"
+
+- name: add trustStorePassword
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--trustStorePassword '+ frds_rs_config_truststore_password ]  }}"
+  when: "( frds_rs_config_truststore_password | length > 0 and  frds_rs_config_truststore_password_file | length == 0 )"
+
+- name: add trustStorePasswordFile
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--trustStorePasswordFile ' + frds_rs_config_truststore_password_file ]  }}"
+  when: "( frds_rs_config_truststore_password_file | length > 0 )"
+
+- name: add useJvmTrustStore
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--useJvmTrustStore' ]  }}"
+  when: "( frds_rs_config_use_jvm_truststore )"
+
+- name: add useJavaTrustStore
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--useJavaTrustStore' ]  }}"
+  when: "( frds_rs_config_use_java_truststore )"
+
+- name: add useJceTrustStore
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--useJceTrustStore ' + frds_rs_config_use_jce_truststore ]  }}"
+  when: "( frds_rs_config_use_jce_truststore | length > 0 )"
+
+- name: add usePkcs12TrustStore
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--usePkcs12TrustStore ' + frds_rs_config_use_pkcs12_truststore ]  }}"
+  when: "( frds_rs_config_use_pkcs12_truststore | length > 0 )"
+
+- name: add trustAll
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--trustAll']  }}"
+  when: "( frds_rs_config_trust_all and frds_rs_config_replication_server | length > 0 )"
+
+# Common Configuration
+- name: add Base DN
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--baseDn ' + item ]  }}"
+  loop: "{{ frds_rs_config_base_dns }}"
+  when: "( frds_rs_config_replication_server | length > 0 )"
+
+- name: add Production Mode
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--productionMode' ]  }}"
+  when: "( frds_rs_config_production_mode )"
+  
+- name: add doNotStart
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--doNotStart' ]  }}"
+  when: "( not frds_rs_config_start_server )"
+  
+- name: add rootUserPasswordFile
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--rootUserPasswordFile ' + frds_rs_config_root_user_password_file ]  }}"
+  when: "( frds_rs_config_root_user_password_file | length > 0 )"
+
+- name: add rootUserPassword
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--rootUserPassword '+ frds_rs_config_root_user_password ]  }}"
+  when: "( frds_rs_config_root_user_password | length > 0 and  frds_rs_config_root_user_password_file | length == 0 )"
+
+- name: add monitorUserPasswordFile
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--monitorUserPasswordFile ' + frds_rs_config_monitor_user_password_file ]  }}"
+  when: "( frds_rs_config_monitor_user_password_file | length > 0 )"
+
+- name: add monitorUserPassword
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--monitorUserPassword '+ frds_rs_config_monitor_user_password ]  }}"
+  when: "( frds_rs_config_monitor_user_password | length > 0 and  frds_rs_config_monitor_user_password_file | length == 0 )"
+
+- name: add keyStorePasswordFile
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--keyStorePasswordFile ' + frds_rs_config_keystore_password_file ]  }}"
+  when: "( frds_rs_config_keystore_password_file | length > 0 )"
+
+- name: add keyStorePassword
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--keyStorePassword '+ frds_rs_config_keystore_password ]  }}"
+  when: "( frds_rs_config_keystore_password | length > 0 and frds_rs_config_keystore_password_file | length == 0 )"
+
+- name: add useJavaKeyStore
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--useJavaKeyStore ' + frds_rs_config_keystore_password_file ]  }}"
+  when: "( frds_rs_config_use_jks_keystore | length > 0 )"
+
+- name: add useJceKeyStore
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--useJceKeyStore ' + frds_rs_config_use_jceks_keystore ]  }}"
+  when: "( frds_rs_config_use_jceks_keystore | length > 0 )"
+
+- name: add usePkcs11KeyStore
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--usePkcs11KeyStore ' + frds_rs_config_use_pkcs11_keystore ]  }}"
+  when: "( frds_rs_config_use_pkcs11_keystore | length > 0 )"
+
+- name: add usePkcs12KeyStore
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--usePkcs12KeyStore ' + frds_rs_config_use_pkcs12_keystore ]  }}"
+  when: "( frds_rs_config_use_pkcs12_keystore | length > 0 )"
+
+- name: add frds_command_line
+  set_fact:
+    frds_command_line: "{{ frds_command_line_options | join(' ') }}"

@@ -1,0 +1,159 @@
+---
+
+- name: set base facts
+  set_fact:
+    frds_command_line_options: []
+
+- name: base configuration 
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ item ] }}"
+  loop:
+    - "--rootUserDN '{{ frds_ps_config_root_user_dn }}'"
+    - "--proxyUserBindDn '{{ frds_ps_config_proxy_user_bind_dn }}'"
+    - "--monitorUserDn '{{ frds_ps_config_monitor_user_dn }}'"
+    - "--replicationBindDn '{{ frds_ps_config_replication_bind_dn }}'"
+    - "--hostname {{ frds_ps_config_hostname }}"
+    - "--ldapPort {{ frds_ps_config_ldap_port }}"
+    - "--ldapsPort {{ frds_ps_config_ldaps_port }}"
+    - "--httpPort {{ frds_ps_config_http_port }}"
+    - "--httpsPort {{ frds_ps_config_https_port }}"
+    - "--adminConnectorPort {{ frds_ps_config_admin_port }}"
+    - "--instancePath {{ frds_ps_config_instance_path }}"
+    - "--acceptLicense"
+
+- name: add loadBalancingAlgorithm
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--loadBalancingAlgorithm ' + frds_ps_config_load_balancing_algorithm ]  }}"
+  when: "( frds_ps_config_load_balancing_algorithm | length > 0 )"
+- name: add proxyUsingSsl
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--proxyUsingSsl' ]  }}"
+  when: "( frds_ps_config_proxy_using_ssl )"
+
+- name: add proxyUsingStartTls
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--proxyUsingStartTls' ]  }}"
+  when: "( frds_ps_config_proxy_using_start_tls )"
+
+- name: add replicationPreferredGroupId
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--replicationPreferredGroupId ' + frds_ps_config_replication_preferred_group_id ]  }}"
+  when: "( frds_ps_config_replication_preferred_group_id | length > 0 )"
+
+- name: add replicationServer
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--replicationServer ' + frds_ps_config_replication_server ]  }}"
+  when: "( frds_ps_config_replication_server | length > 0 and ( frds_ps_config_static_secondary_server | length == 0 and frds_ps_config_static_primary_server | length ==0 ) )"
+
+- name: addstaticPrimaryServer
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--addstaticPrimaryServer ' + frds_ps_config_static_primary_server ]  }}"
+  loop: "{{ frds_ps_config_static_primary_server }}"
+  when: "( frds_ps_config_static_primary_server | length > 0 and frds_ps_config_replication_server | length == 0 )"
+
+- name: add staticSecondaryServer
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--staticSecondaryServer ' + frds_ps_config_static_secondary_server ]  }}"
+  loop: "{{ frds_ps_config_static_secondary_server }}"
+  when: "( ( frds_ps_config_static_secondary_server | length > 0 and frds_ps_config_static_primary_server | length > 0 ) and frds_ps_config_replication_server | length == 0 )"
+
+- name: add enableStartTls
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--enableStartTls' ]  }}"
+  when: "( frds_ps_config_enable_start_tls )"
+
+- name: add trustStorePassword
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--trustStorePassword '+ frds_ps_config_truststore_password ]  }}"
+  when: "( frds_ps_config_truststore_password | length > 0 and  frds_ps_config_truststore_password_file | length == 0 )"
+
+- name: add trustStorePasswordFile
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--trustStorePasswordFile ' + frds_ps_config_truststore_password_file ]  }}"
+  when: "( frds_ps_config_truststore_password_file | length > 0 )"
+
+- name: add useJvmTrustStore
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--useJvmTrustStore']  }}"
+  when: "( frds_ps_config_use_jvm_truststore )"
+
+- name: add useJavaTrustStore
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--useJavaTrustStore ' + frds_ps_config_use_java_truststore ]  }}"
+  when: "( frds_ps_config_use_java_truststore )"
+
+- name: add useJceTrustStore
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--useJceTrustStore ' + frds_ps_config_use_jce_truststore ]  }}"
+  when: "( frds_ps_config_use_jce_truststore | length > 0 )"
+
+- name: add usePkcs12TrustStore
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--usePkcs12TrustStore ' + frds_ps_config_use_pkcs12_truststore ]  }}"
+  when: "( frds_ps_config_use_pkcs12_truststore | length > 0 )"
+
+- name: add proxyUserBindPasswordFile
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--proxyUserBindPasswordFile ' + frds_ps_config_proxy_user_bind_password_file ]  }}"
+  when: "( frds_ps_config_proxy_user_bind_password_file | length > 0 )"
+
+- name: add proxyUserBindPassword
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--proxyUserBindPassword '+ frds_ps_config_proxy_user_bind_password ]  }}"
+  when: "( frds_ps_config_proxy_user_bind_password | length > 0 and  frds_ps_config_proxy_user_bind_password_file | length == 0 )"
+
+- name: add replicationBindPasswordFile
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--replicationBindPasswordFile ' + frds_ps_config_replication_bind_password_file ]  }}"
+  when: "( frds_ps_config_replication_bind_password_file | length > 0 )"
+
+- name: add replicationBindPassword
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--replicationBindPassword '+ frds_ps_config_replication_bind_password ]  }}"
+  when: "( frds_ps_config_replication_bind_password | length > 0 and  frds_ps_config_replication_bind_password_file | length == 0 )"
+
+- name: add trustAll
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--trustAll']  }}"
+  when: "( frds_ps_config_trust_all )"
+
+# Common Configuration
+- name: add Base DN
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--baseDn ' + item ]  }}"
+  loop: "{{ frds_ps_config_base_dns }}"
+  when: "( not frds_ps_config_profiles_enabled )"
+
+- name: add Production Mode
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--productionMode' ]  }}"
+  when: "( frds_ps_config_production_mode )"
+
+- name: add doNotStart
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--doNotStart' ]  }}"
+  when: "( not frds_ps_config_start_server )"
+
+- name: add rootUserPasswordFile
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--rootUserPasswordFile ' + frds_rs_config_root_user_password_file ]  }}"
+  when: "( frds_rs_config_root_user_password_file | length > 0 )"
+
+- name: add rootUserPassword
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--rootUserPassword '+ frds_rs_config_root_user_password ]  }}"
+  when: "( frds_rs_config_root_user_password | length > 0 and  frds_rs_config_root_user_password_file | length == 0 )"
+
+- name: add monitorUserPasswordFile
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--monitorUserPasswordFile ' + frds_ps_config_monitor_user_password_file ]  }}"
+  when: "( frds_ps_config_monitor_user_password_file | length > 0 )"
+
+- name: add monitorUserPassword
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--monitorUserPassword '+ frds_ps_config_monitor_user_password ]  }}"
+  when: "( frds_ps_config_monitor_user_password | length > 0 and  frds_ps_config_monitor_user_password_file | length == 0 )"
+
+- name: add frds_command_line
+  set_fact:
+    frds_command_line: "{{ frds_command_line_options | join(' ') }}"

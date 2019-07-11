@@ -1,0 +1,24 @@
+{% set dn_parts = frds_basedn.split(',') %}
+{% set ocDict = { 'dc':'domain' } %}
+{% set dnArray = [] %}
+
+{% for dn_part in dn_parts|reverse %}
+{% set parts = dn_part.split('=') %}
+{% set dn_string = parts[0]+'='+parts[1] %}
+{% if dnArray.append(dn_string) %}{% endif %}
+dn: {{ dnArray|reverse|join(',') }}
+objectClass: {{ ocDict[parts[0]] }}
+objectClass: top
+{{ parts[0] }}: {{ parts[1] }}
+
+{% endfor %}
+
+dn: ou=groups,{{ frds_basedn }}
+objectClass: organizationalUnit
+objectClass: top
+ou: groups
+
+dn: ou=people,{{ frds_basedn }}
+objectClass: organizationalunit
+objectClass: top
+ou: people

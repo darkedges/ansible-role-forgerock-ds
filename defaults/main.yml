@@ -1,0 +1,163 @@
+---
+
+# Common configuration
+frds_staging_dir: /tmp/staging
+frds_default_password: "Passw0rd"
+frds_install_file: DS-eval-6.5.0.zip
+frds_fr_user: fr
+frds_fr_group: fr
+frds_install_path: /opt/ois/frds
+frds_instance_path: /var/config/frds
+
+frds_install_type: "directory-server"
+frds_install_operation: "install"
+
+# ForgeRock Directory Service - proxy-server configuration
+frds_ps_config_admin_port: "{{ frds_ps_config_base_port + 444 }}" 
+frds_ps_config_base_dns: []
+frds_ps_config_base_port: 3000 
+frds_ps_config_enable_start_tls: true
+frds_ps_config_hostname: "{{ ansible_hostname }}"
+frds_ps_config_http_port: "{{ frds_ps_config_base_port + 880 }}" 
+frds_ps_config_https_port: "{{ frds_ps_config_base_port + 943 }}"  
+frds_ps_config_instance_path: "{{ frds_instance_path }}/{{ frds_ps_service_name }}"
+frds_ps_config_jmx_port: "{{ frds_ps_config_base_port + 789 }}" 
+frds_ps_config_ldap_port: "{{ frds_ps_config_base_port + 389 }}" 
+frds_ps_config_ldaps_port: "{{ frds_ps_config_base_port + 636 }}" 
+frds_ps_config_load_balancing_algorithm: ""
+frds_ps_config_monitor_user_dn: "uid=monitor"
+frds_ps_config_monitor_user_password_file: ""
+frds_ps_config_monitor_user_password: "{{ frds_default_password }}"
+frds_ps_config_production_mode: true
+frds_ps_config_proxy_user_bind_dn: "uid=am-identity-bind-account,ou=admins,ou=identities"
+frds_ps_config_proxy_user_bind_password_file: ""
+frds_ps_config_proxy_user_bind_password: "{{ frds_default_password }}"
+frds_ps_config_proxy_using_ssl: false
+frds_ps_config_proxy_using_start_tls: true
+frds_ps_config_replication_bind_dn: "{{ frds_rs_config_root_user_dn }}"
+frds_ps_config_replication_bind_password_file: ""
+frds_ps_config_replication_bind_password: "{{ frds_default_password }}"
+frds_ps_config_replication_preferred_group_id: ""
+frds_ps_config_replication_server: "{{ frds_rs_config_hostname }}:{{ frds_rs_config_admin_port }}"
+frds_ps_config_root_user_dn: "cn=Directory Manager"
+frds_ps_config_root_user_password_file: ""
+frds_ps_config_root_user_password: "{{ frds_default_password }}"
+frds_ps_config_skip_port_check: false
+frds_ps_config_static_primary_server: []
+frds_ps_config_static_secondary_server: []
+frds_ps_config_trust_all: true
+frds_ps_config_truststore_password_file: ""
+frds_ps_config_truststore_password: ""
+frds_ps_config_use_java_truststore: false
+frds_ps_config_use_jce_truststore: ""
+frds_ps_config_use_jvm_truststore: false
+frds_ps_config_use_pkcs12_truststore: ""
+frds_ps_group: "{{ frds_fr_group }}"
+frds_ps_install_directory: "{{ frds_install_path }}/{{ frds_ps_service_name }}"
+frds_ps_service_name: "ps"
+frds_ps_user: "{{ frds_fr_user }}"
+
+# ForgeRock Directory Service - replication-server configuration
+frds_rs_config_admin_port: "{{ frds_rs_config_base_port + 444 }}" 
+frds_rs_config_base_dns: []
+frds_rs_config_base_port: 2000 
+frds_rs_config_hostname: "{{ ansible_hostname }}"
+frds_rs_config_http_port: "{{ frds_rs_config_base_port + 880 }}" 
+frds_rs_config_https_port: "{{ frds_rs_config_base_port + 943 }}"  
+frds_rs_config_instance_path: "{{ frds_instance_path }}/{{ frds_rs_service_name }}"
+frds_rs_config_jmx_port: "{{ frds_rs_config_base_port + 789 }}" 
+frds_rs_config_keystore_password_file: ""
+frds_rs_config_keystore_password: ""
+frds_rs_config_monitor_user_dn: "uid=monitor"
+frds_rs_config_monitor_user_password_file: ""
+frds_rs_config_monitor_user_password: "{{ frds_default_password }}"
+frds_rs_config_production_mode: true
+frds_rs_config_replication_master: true
+frds_rs_config_replication_port: "{{ frds_rs_config_base_port + 989 }}" 
+frds_rs_config_replication_server: ""
+frds_rs_config_root_user_dn: "cn=Directory Manager"
+frds_rs_config_root_user_password_file: ""
+frds_rs_config_root_user_password: "{{ frds_default_password }}"
+frds_rs_config_secure_replication: true
+frds_rs_config_skip_port_check: false
+frds_rs_config_start_server: false
+frds_rs_config_trust_all: false
+frds_rs_config_truststore_password_file: ""
+frds_rs_config_truststore_password: ""
+frds_rs_config_use_java_truststore: false
+frds_rs_config_use_jce_truststore: ""
+frds_rs_config_use_jceks_keystore: ""
+frds_rs_config_use_jks_keystore: ""
+frds_rs_config_use_jvm_truststore: false
+frds_rs_config_use_pkcs11_keystore: ""
+frds_rs_config_use_pkcs12_keystore: ""
+frds_rs_config_use_pkcs12_truststore: ""
+frds_rs_group: "{{ frds_fr_group }}"
+frds_rs_install_directory: "{{ frds_install_path }}/{{ frds_rs_service_name }}"
+frds_rs_service_name: "rs"
+frds_rs_user: "{{ frds_fr_user }}"
+
+# ForgeRock Directory Service - directory-server configuration
+frds_ds_config_add_base_entry: false
+frds_ds_config_admin_port: "{{ frds_ds_config_base_port + 444 }}" 
+frds_ds_config_base_dns: []
+frds_ds_config_base_port: 1000 
+frds_ds_config_cert_nickname: []
+frds_ds_config_enable_start_tls: true
+frds_ds_config_hostname: "{{ ansible_hostname }}"
+frds_ds_config_http_port: "{{ frds_ds_config_base_port + 880 }}" 
+frds_ds_config_https_port: "{{ frds_ds_config_base_port + 943 }}"  
+frds_ds_config_import_ldif_file: []
+frds_ds_config_instance_path: "{{ frds_instance_path }}/{{ frds_ds_service_name }}"
+frds_ds_config_jmx_port: "{{ frds_ds_config_base_port + 789 }}" 
+frds_ds_config_keystore_password_file: ""
+frds_ds_config_keystore_password: ""
+frds_ds_config_ldap_port: "{{ frds_ds_config_base_port + 389 }}" 
+frds_ds_config_ldaps_port: "{{ frds_ds_config_base_port + 636 }}" 
+frds_ds_config_monitor_user_dn: "uid=monitor"
+frds_ds_config_monitor_user_password_file: ""
+frds_ds_config_monitor_user_password: "{{ frds_default_password }}"
+frds_ds_config_production_mode: true
+frds_ds_config_profiles:
+  - profile: "am-identity-store"
+    version: "6.5.0"
+    settings: 
+      - paramName: "backendName"
+        value: "amIdentityStore"
+      - paramName: "amIdentityStoreAdminPassword"
+        value: "{{ frds_default_password }}"
+  - profile: "am-config"
+    version: "6.5.0"
+    settings: 
+      - paramName: "backendName"
+        value: "cfgStore"
+      - paramName: "amConfigAdminPassword"
+        value: "{{ frds_default_password }}"
+      - paramName: "baseDn"
+        value: "ou=am-config"
+  - profile: "am-cts"
+    version: "6.5.0"
+    settings: 
+      - paramName: "backendName"
+        value: "amCts"
+      - paramName: "amCtsAdminPassword"
+        value: "{{ frds_default_password }}"
+      - paramName: "tokenExpirationPolicy"
+        value: "am"
+frds_ds_config_profiles_enabled: true
+frds_ds_config_reject_file: ""
+frds_ds_config_root_user_dn: "cn=Directory Manager"
+frds_ds_config_root_user_password_file: ""
+frds_ds_config_root_user_password: "{{ frds_default_password }}"
+frds_ds_config_sample_data: -1
+frds_ds_config_skip_file: ""
+frds_ds_config_skip_port_check: false
+frds_ds_config_start_server: false
+frds_ds_config_use_jceks_keystore: ""
+frds_ds_config_use_jks_keystore: ""
+frds_ds_config_use_pkcs11_keystore: ""
+frds_ds_config_use_pkcs12_keystore: ""
+frds_ds_group: "{{ frds_fr_group }}"
+frds_ds_install_directory: "{{ frds_install_path }}/{{ frds_ds_service_name }}"
+frds_ds_service_name: "ds"
+frds_ds_user: "{{ frds_fr_user }}"
