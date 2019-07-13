@@ -38,7 +38,7 @@
 
 - name: add Sample Data
   set_fact:
-    frds_command_line_options: "{{ frds_command_line_options + [ '--sampleData ' + frds_ds_config_sample_data ]  }}"
+    frds_command_line_options: "{{ frds_command_line_options + [ '--sampleData ' + frds_ds_config_sample_data|string ]  }}"
   when: "( frds_ds_config_sample_data > 0 )"
 
 - name: add import LDIF
