@@ -3,7 +3,9 @@
 # Common configuration
 frds_staging_dir: /tmp/staging
 frds_default_password: "Passw0rd"
-frds_install_file: DS-eval-6.5.0.zip
+frds_version: "6.5.0"
+frds_version_eval: true
+frds_install_file: "DS{{ '-eval' if frds_version_eval  }}-{{ frds_version }}.zip"
 frds_fr_user: forgerock
 frds_fr_group: forgerock
 frds_install_path: /opt/ois/frds

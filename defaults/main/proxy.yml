@@ -1,0 +1,46 @@
+---
+
+# ForgeRock Directory Service - proxy-server configuration
+frds_ps_config_admin_port: "{{ frds_ps_config_base_port + 444 }}" 
+frds_ps_config_base_dns: []
+frds_ps_config_base_port: 3000 
+frds_ps_config_enable_start_tls: true
+frds_ps_config_hostname: "{{ ansible_hostname }}"
+frds_ps_config_http_port: "{{ frds_ps_config_base_port + 880 }}" 
+frds_ps_config_https_port: "{{ frds_ps_config_base_port + 943 }}"  
+frds_ps_config_instance_path: "{{ frds_instance_path }}/{{ frds_ps_service_name }}"
+frds_ps_config_jmx_port: "{{ frds_ps_config_base_port + 789 }}" 
+frds_ps_config_ldap_port: "{{ frds_ps_config_base_port + 389 }}" 
+frds_ps_config_ldaps_port: "{{ frds_ps_config_base_port + 636 }}" 
+frds_ps_config_load_balancing_algorithm: ""
+frds_ps_config_monitor_user_dn: "uid=monitor"
+frds_ps_config_monitor_user_password_file: ""
+frds_ps_config_monitor_user_password: "{{ frds_default_password }}"
+frds_ps_config_production_mode: true
+frds_ps_config_proxy_user_bind_dn: "uid=am-identity-bind-account,ou=admins,ou=identities"
+frds_ps_config_proxy_user_bind_password_file: ""
+frds_ps_config_proxy_user_bind_password: "{{ frds_default_password }}"
+frds_ps_config_proxy_using_ssl: false
+frds_ps_config_proxy_using_start_tls: true
+frds_ps_config_replication_bind_dn: "{{ frds_rs_config_root_user_dn }}"
+frds_ps_config_replication_bind_password_file: ""
+frds_ps_config_replication_bind_password: "{{ frds_default_password }}"
+frds_ps_config_replication_preferred_group_id: ""
+frds_ps_config_replication_server: "{{ frds_rs_config_hostname }}:{{ frds_rs_config_admin_port }}"
+frds_ps_config_root_user_dn: "cn=Directory Manager"
+frds_ps_config_root_user_password_file: ""
+frds_ps_config_root_user_password: "{{ frds_default_password }}"
+frds_ps_config_skip_port_check: false
+frds_ps_config_static_primary_server: []
+frds_ps_config_static_secondary_server: []
+frds_ps_config_trust_all: true
+frds_ps_config_truststore_password_file: ""
+frds_ps_config_truststore_password: ""
+frds_ps_config_use_java_truststore: false
+frds_ps_config_use_jce_truststore: ""
+frds_ps_config_use_jvm_truststore: false
+frds_ps_config_use_pkcs12_truststore: ""
+frds_ps_group: "{{ frds_fr_group }}"
+frds_ps_install_directory: "{{ frds_install_path }}/{{ frds_ps_service_name }}"
+frds_ps_service_name: "ps"
+frds_ps_user: "{{ frds_fr_user }}"
