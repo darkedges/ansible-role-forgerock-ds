@@ -10,7 +10,7 @@ frds_ds_config_cert_nickname: []
 frds_ds_config_enable_start_tls: true
 frds_ds_config_hostname: "{{ ansible_hostname }}"
 frds_ds_config_http_port: "{{ 8080 if (frds_ds_config_base_port == 0) else frds_ds_config_base_port + 880 }}" 
-frds_ds_config_https_port: "{{ 8443 if (frds_ds_config_base_port == 0) else frds_ds_config_base_port + 943 }}"  
+frds_ds_config_https_port: "{{ 8443 if (frds_ds_config_base_port == 0) else frds_ds_config_base_port + 843 }}"  
 frds_ds_config_import_ldif_file: []
 frds_ds_config_instance_path: "{{ frds_install_path if frds_ds_service_name | length == 0 else frds_instance_path }}/{{ frds_ds_service_name }}"
 frds_ds_config_jmx_port: "{{ 1689 if (frds_ds_config_base_port == 0) else frds_ds_config_base_port + 689 }}" 
@@ -56,7 +56,7 @@ frds_ds_config_root_user_password_file: ""
 frds_ds_config_root_user_password: "{{ frds_default_password }}"
 frds_ds_config_sample_data: -1
 frds_ds_config_skip_file: ""
-frds_ds_config_skip_port_check: true
+frds_ds_config_skip_port_check: false
 frds_ds_config_start_server: false
 frds_ds_config_use_jceks_keystore: ""
 frds_ds_config_use_jks_keystore: ""
