@@ -1,5 +1,20 @@
 ---
 
+
+
+- name: Check that the db directory exists
+  stat:
+    path: "{{ frds_ds_config_instance_path }}/db"
+  register: frds_db_instance_result
+
+- name: set installed fact
+  set_fact:   
+    frds_ds_installed: "{{ frds_db_instance_result.stat.exists }}"
+
+- name: debug
+  debug:
+    msg: "{{ frds_ds_installed }}"
+
 - name: move archive to correct location
   command: "mv {{ frds_staging_dir }}/{{ archive_contents.files[0].split('/')[0] }} {{ frds_ds_install_directory }}"
   become_user: "{{ frds_ds_user }}"
@@ -14,17 +29,18 @@
     state: directory 
     recurse: yes      
 
-- include: configureCommandLine.yml
+- include_tasks: configureCommandLine.yml
+  when: "not frds_ds_installed"
 
 - name: debug
   debug:
     msg: "{{ frds_command_line }}"
+  when: "not frds_ds_installed"
 
 - name: setup FRDS
   command: "{{ frds_ds_install_directory }}/setup directory-server {{ frds_command_line }}"
   become_user: "{{ frds_ds_user }}"
-  args:
-    creates: "{{ frds_ds_install_directory }}/instance.loc"            
+  when: "not frds_ds_installed"          
 
 - name: set frds_service_name fact
   set_fact:
@@ -48,11 +64,13 @@
 - name: Enable opends service - CentOS/RHEL 6
   service: 
     name: "{{ frds_ds_service_name }}"
-    enabled: no
+    enabled: yes
+    state: stopped
   when: ansible_distribution_major_version == '6'
 
 - name: Enable opends service - CentOS/RHEL 7
   service: 
     name: "{{ frds_ds_service_name }}.service"
-    enabled: no
+    enabled: yes
+    state: stopped
   when: ansible_distribution_major_version == '7'     

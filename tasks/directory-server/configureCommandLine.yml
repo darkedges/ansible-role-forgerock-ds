@@ -9,15 +9,27 @@
     frds_command_line_options: "{{ frds_command_line_options + [ item ] }}"
   loop:
     - "--rootUserDN '{{ frds_ds_config_root_user_dn }}'"
-    - "--monitorUserDn '{{ frds_ds_config_monitor_user_dn }}'"
     - "--hostname {{ frds_ds_config_hostname }}"
     - "--ldapPort {{ frds_ds_config_ldap_port }}"
     - "--ldapsPort {{ frds_ds_config_ldaps_port }}"
-    - "--httpPort {{ frds_ds_config_http_port }}"
-    - "--httpsPort {{ frds_ds_config_https_port }}"
     - "--adminConnectorPort {{ frds_ds_config_admin_port }}"
     - "--instancePath {{ frds_ds_config_instance_path }}"
     - "--acceptLicense"
+
+- name: add monitorUserDN
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--monitorUserDn ' + ''' + frds_ds_config_monitor_user_dn +''' ]  }}"
+  when: "( frds_ds_enable_user_monitor and frds_ds_config_monitor_user_dn | length > 0 )"
+
+- name: add httpPort
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--httpPort ' + frds_ds_config_https_port ]  }}"
+  when: "( frds_ds_enable_ports_http )"
+
+- name: add httpPorts
+  set_fact:
+    frds_command_line_options: "{{ frds_command_line_options + [ '--httpsPort ' + frds_ds_config_https_port ]  }}"
+  when: "( frds_ds_enable_ports_https )"
 
 - name: add BaseEntry
   set_fact:
@@ -56,7 +68,7 @@
 - name: add skipPortCheck
   set_fact:
     frds_command_line_options: "{{ frds_command_line_options + [ '--skipPortCheck' ]  }}"
-  when: "( not frds_ds_config_skip_port_check )"
+  when: "( frds_ds_config_skip_port_check )"
 
 - name: add rejectFile
   set_fact:
@@ -103,12 +115,12 @@
 - name: add monitorUserPasswordFile
   set_fact:
     frds_command_line_options: "{{ frds_command_line_options + [ '--monitorUserPasswordFile ' + frds_ds_config_monitor_user_password_file ]  }}"
-  when: "( frds_ds_config_monitor_user_password_file | length > 0 )"
+  when: "( frds_ds_enable_user_monitor and frds_ds_config_monitor_user_dn | length > 0 and frds_ds_config_monitor_user_password_file | length > 0 )"
 
 - name: add monitorUserPassword
   set_fact:
     frds_command_line_options: "{{ frds_command_line_options + [ '--monitorUserPassword '+ frds_ds_config_monitor_user_password ]  }}"
-  when: "( frds_ds_config_monitor_user_password | length > 0 and  frds_ds_config_monitor_user_password_file | length == 0 )"
+  when: "( frds_ds_enable_user_monitor and frds_ds_config_monitor_user_dn | length > 0 and frds_ds_config_monitor_user_password | length > 0 and  frds_ds_config_monitor_user_password_file | length == 0 )"
 
 - name: add keyStorePasswordFile
   set_fact:

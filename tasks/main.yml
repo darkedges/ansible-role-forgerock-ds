@@ -181,20 +181,20 @@
     creates: "{{ frds_staging_dir }}/setup"
   register: archive_contents
 
-- include: "directory-server/install.yml"
+- include_tasks: "directory-server/install.yml"
   when: "( frds_install_operation == 'install' and frds_install_type == 'directory-server' )"
 
-- include: "directory-server/configure.yml"
+- include_tasks: "directory-server/configure.yml"
   when: "( frds_install_operation == 'configure' and frds_install_type == 'directory-server' )"
 
-- include: "replication-server/install.yml"
+- include_tasks: "replication-server/install.yml"
   when: "( frds_install_operation == 'install' and frds_install_type == 'replication-server' )"
 
-- include: "replication-server/configure.yml"
+- include_tasks: "replication-server/configure.yml"
   when: "( frds_install_operation == 'configure' and frds_install_type == 'replication-server' )"
 
-- include: "proxy-server/install.yml"
+- include_tasks: "proxy-server/install.yml"
   when: "( frds_install_operation == 'install' and frds_install_type == 'proxy-server' )"
 
-- include: "proxy-server/configure.yml"
+- include_tasks: "proxy-server/configure.yml"
   when: "( frds_install_operation == 'configure' and frds_install_type == 'proxy-server' )"
