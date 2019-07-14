@@ -314,4 +314,4 @@ This use default values
 ## License
 
 Copyright © 2019 [DarkEdges](https://bitbucket.org/darkedges).  
-This project is [Apache License Version 2.0](https://bitbucket.org/darkedges/ansible-role-forgerock-ds/src/master/LICENSE) licensed.
+This project is [Apache License Version 2.0](https://github.com/darkedges/ansible-role-forgerock-ds/blob/master/LICENSE) licensed.
