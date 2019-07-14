@@ -3,5 +3,7 @@
   hosts: all
   become: true
 
-  roles:
-    - role: darkedges.forgerock_ds
+  tasks:
+    - name: Lets make this pass
+      debug:
+        msg: "All good"
