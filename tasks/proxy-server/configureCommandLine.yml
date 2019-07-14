@@ -4,7 +4,7 @@
   set_fact:
     frds_command_line_options: []
 
-- name: base configuration 
+- name: base configuration
   set_fact:
     frds_command_line_options: "{{ frds_command_line_options + [ item ] }}"
   loop:
@@ -43,7 +43,9 @@
 - name: add replicationServer
   set_fact:
     frds_command_line_options: "{{ frds_command_line_options + [ '--replicationServer ' + frds_ps_config_replication_server ]  }}"
-  when: "( frds_ps_config_replication_server | length > 0 and ( frds_ps_config_static_secondary_server | length == 0 and frds_ps_config_static_primary_server | length ==0 ) )"
+  when: "( frds_ps_config_replication_server | length > 0 and
+        ( frds_ps_config_static_secondary_server | length == 0 and
+        frds_ps_config_static_primary_server | length ==0 ) )"
 
 - name: addstaticPrimaryServer
   set_fact:
@@ -55,7 +57,9 @@
   set_fact:
     frds_command_line_options: "{{ frds_command_line_options + [ '--staticSecondaryServer ' + frds_ps_config_static_secondary_server ]  }}"
   loop: "{{ frds_ps_config_static_secondary_server }}"
-  when: "( ( frds_ps_config_static_secondary_server | length > 0 and frds_ps_config_static_primary_server | length > 0 ) and frds_ps_config_replication_server | length == 0 )"
+  when: "( ( frds_ps_config_static_secondary_server | length > 0 and
+        frds_ps_config_static_primary_server | length > 0 ) and
+        frds_ps_config_replication_server | length == 0 )"
 
 - name: add enableStartTls
   set_fact:

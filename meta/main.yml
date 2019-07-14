@@ -17,6 +17,7 @@ galaxy_info:
         - all
   galaxy_tags:
     - forgerock
+    - directory
     - accessmanagement
 
 allow_duplicates: true

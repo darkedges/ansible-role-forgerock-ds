@@ -1,64 +1,67 @@
 ---
 
 - name: check if replication server is not amaster
-  fail: 
+  fail:
     msg: "You must supply 'frds_rs_config_replication_server' details"
   when: "(frds_rs_config_replication_server | length == 0 and not frds_rs_config_replication_master )"
 
 # - name: check if replication server is not a master and have not based dn
-#   fail: 
+#   fail:
 #     msg: "You must supply BaseDN details, when replication server is not a master"
-#   when: "( 
-#           (frds_rs_config_replication_server | length > 0 and not frds_rs_config_replication_master) 
-#           and ( frds_rs_config_base_dns | length == 0 ) 
+#   when: "(
+#           (frds_rs_config_replication_server | length > 0 and not frds_rs_config_replication_master)
+#           and ( frds_rs_config_base_dns | length == 0 )
 #         )"
 
 - name: check if replication server is not a master and have necessary trust
-  fail: 
+  fail:
     msg: "You must supply trust details"
-  when: "( 
-          (frds_rs_config_replication_server | length > 0 and not frds_rs_config_replication_master) 
-          and ( not frds_rs_config_trust_all and not frds_rs_config_use_jvm_truststore) 
+  when: "(
+          (frds_rs_config_replication_server | length > 0 and not frds_rs_config_replication_master)
+          and ( not frds_rs_config_trust_all and not frds_rs_config_use_jvm_truststore)
         )"
 
 - name: check if proxy server both frds_ps_config_proxy_using_start_tls and frds_ps_config_proxy_using_ssl are true
-  fail: 
+  fail:
     msg: "You must supply either frds_ps_config_proxy_using_start_tls or frds_ps_config_proxy_using_ssl to be true"
-  when: "( 
-          frds_ps_config_proxy_using_ssl and frds_ps_config_proxy_using_start_tls 
+  when: "(
+          frds_ps_config_proxy_using_ssl and frds_ps_config_proxy_using_start_tls
         )"
 
 - name: check if proxy server frds_ps_config_static_primary_server or frds_ps_config_replication_server is defined
-  fail: 
+  fail:
     msg: "You must supply either frds_ps_config_static_primary_server or frds_ps_config_replication_server"
-  when: "( 
-          frds_ps_config_static_primary_server | length == 0  and frds_ps_config_replication_server | length == 0 
+  when: "(
+          frds_ps_config_static_primary_server | length == 0  and frds_ps_config_replication_server | length == 0
         )"
 
 - name: Check if Proxy Server replication server enabled and correct bind details
-  fail: 
+  fail:
     msg: "You must supply frds_ps_config_replication_bind_dn and frds_ps_config_replication_bind_password or frds_ps_config_replication_bind_password_file"
-  when: "( 
-          frds_ps_config_replication_server | length > 0 and ( frds_ps_config_replication_bind_dn | length > 0 and ( frds_ps_config_replication_bind_password | length == 0 and frds_ps_config_replication_bind_password_file | length == 0 ) )
+  when: "(
+          frds_ps_config_replication_server | length > 0
+          and ( frds_ps_config_replication_bind_dn | length > 0 and
+          ( frds_ps_config_replication_bind_password | length == 0 and
+          frds_ps_config_replication_bind_password_file | length == 0 ) )
         )"
 
 - include_tasks: "extract.yml"
-  when: frds_install_operation == 'install' 
+  when: frds_install_operation == 'install'
 
 - include_tasks: "directory-server/install.yml"
-  when: frds_install_operation == 'install' and 
+  when: frds_install_operation == 'install' and
         frds_install_type == 'directory-server'
 
 - include_tasks: "directory-server/configure.yml"
-  when: frds_install_operation in ['configure', 'install'] and 
+  when: frds_install_operation in ['configure', 'install'] and
         frds_install_type == 'directory-server'
 
 - include_tasks: "directory-server/enableServices.yml"
   when: frds_install_type == 'directory-server'
 
 - include_tasks: "directory-server/replication.yml"
-  when: frds_install_operation == 'replication' and 
-        frds_ds_config_replication_embedded_server and 
+  when: frds_install_operation == 'replication' and
+        frds_ds_config_replication_embedded_server and
         frds_install_type == 'directory-server'
 
 - include_tasks: "replication-server/install.yml"

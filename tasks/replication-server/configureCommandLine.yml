@@ -4,7 +4,7 @@
   set_fact:
     frds_command_line_options: []
 
-- name: base configuration 
+- name: base configuration
   set_fact:
     frds_command_line_options: "{{ frds_command_line_options + [ item ] }}"
   loop:
@@ -74,12 +74,12 @@
   set_fact:
     frds_command_line_options: "{{ frds_command_line_options + [ '--productionMode' ]  }}"
   when: "( frds_rs_config_production_mode )"
-  
+
 - name: add doNotStart
   set_fact:
     frds_command_line_options: "{{ frds_command_line_options + [ '--doNotStart' ]  }}"
   when: "( not frds_rs_config_start_server )"
-  
+
 - name: add rootUserPasswordFile
   set_fact:
     frds_command_line_options: "{{ frds_command_line_options + [ '--rootUserPasswordFile ' + frds_rs_config_root_user_password_file ]  }}"

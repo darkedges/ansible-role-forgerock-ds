@@ -1,6 +1,6 @@
 # Ansible Role: ForgeRock Directory Service
 
-This Ansible Role helps with the installation and configuration of a ForgeRock Directory Service `directory-server` instance. 
+This Ansible Role helps with the installation and configuration of a ForgeRock Directory Service `directory-server` instance.
 
 Although it has the options for `replication-server` and `proxy-server` they will be added a future date.
 
@@ -239,7 +239,7 @@ This use default values
       frds_ds_config_replication_server2_admin_port: 2444
       frds_ds_config_replication_server2_replication_port: 2989
       frds_ds_config_replication_initialize: true
-      frds_ds_config_replication_states: 
+      frds_ds_config_replication_states:
         - "present"
         - "initialize-all"
 ```
@@ -302,16 +302,16 @@ This use default values
       frds_ds_config_replication_server2_admin_port: 2444
       frds_ds_config_replication_server2_replication_port: 2989
       frds_ds_config_replication_initialize: true
-      frds_ds_config_base_dns: 
+      frds_ds_config_base_dns:
         - "ou=identities"
         - "ou=am-config"
         - "ou=tokens"
-      frds_ds_config_replication_states: 
+      frds_ds_config_replication_states:
         - "present"
         - "initialize-all"
 ```
 
 ## License
 
-Copyright © 2019 [DarkEdges](https://bitbucket.org/darkedges).  
+Copyright © 2019 [DarkEdges](https://bitbucket.org/darkedges).
 This project is [Apache License Version 2.0](https://github.com/darkedges/ansible-role-forgerock-ds/blob/master/LICENSE) licensed.

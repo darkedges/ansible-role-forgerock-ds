@@ -8,7 +8,7 @@
   register: frds_db_instance_result
 
 - name: set installed fact
-  set_fact:   
+  set_fact:
     frds_ds_installed: "{{ frds_db_instance_result.stat.exists }}"
 
 - name: debug
@@ -18,16 +18,17 @@
 - name: move archive to correct location
   command: "mv {{ frds_staging_dir }}/{{ archive_contents.files[0].split('/')[0] }} {{ frds_ds_install_directory }}"
   become_user: "{{ frds_ds_user }}"
+  become: true
   args:
     creates: "{{ frds_ds_install_directory }}/setup"
 
 - name: "Change ownership of {{ frds_ds_install_directory }} to {{ frds_ds_user }} user"
-  file: 
-    path: "{{ frds_ds_install_directory }}" 
+  file:
+    path: "{{ frds_ds_install_directory }}"
     owner: "{{ frds_ds_user }}"
     group: "{{ frds_ds_group }}"
-    state: directory 
-    recurse: yes      
+    state: directory
+    recurse: yes
 
 - include_tasks: configureCommandLine.yml
   when: "not frds_ds_installed"
@@ -40,7 +41,8 @@
 - name: setup FRDS
   command: "{{ frds_ds_install_directory }}/setup directory-server {{ frds_command_line }}"
   become_user: "{{ frds_ds_user }}"
-  when: "not frds_ds_installed"          
+  become: true
+  when: "not frds_ds_installed"
 
 - name: set frds_service_name fact
   set_fact:
@@ -48,15 +50,15 @@
     frds_user: "{{ frds_ds_user }}"
 
 - name: Create systemd script - CentOS/RHEL 6
-  template: 
-    src: "etc/init.d/{{ frds_ds_service_name }}" 
+  template:
+    src: "etc/init.d/{{ frds_ds_service_name }}"
     dest: "/etc/init.d"
     mode: 0755
   when: ansible_distribution_major_version == '6'
 
 - name: Create systemd script - CentOS/RHEL 7
-  template: 
-    src: "etc/systemd/system/opends.service.j2" 
+  template:
+    src: "etc/systemd/system/opends.service.j2"
     dest: "/etc/systemd/system/{{ frds_ds_service_name }}.service"
     mode: 0755
-  when: ansible_distribution_major_version == '7'   
+  when: ansible_distribution_major_version == '7'

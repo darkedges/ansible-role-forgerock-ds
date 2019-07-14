@@ -4,7 +4,7 @@
   set_fact:
     frds_command_line_options: []
 
-- name: base configuration 
+- name: base configuration
   set_fact:
     frds_command_line_options: "{{ frds_command_line_options + [ item ] }}"
   loop:
@@ -55,7 +55,7 @@
 - name: add profiles settings
   set_fact:
     frds_command_line_options: "{{ frds_command_line_options + [ '--set ' + item.0.profile + '/' + item.1.paramName + ':' + item.1.value ]  }}"
-  with_subelements: 
+  with_subelements:
    - "{{ frds_ds_config_profiles }}"
    - settings
   when: "(  frds_ds_config_profiles_enabled )"
@@ -101,7 +101,7 @@
   set_fact:
     frds_command_line_options: "{{ frds_command_line_options + [ '--doNotStart' ]  }}"
   when: "( not frds_ds_config_start_server )"
-  
+
 - name: add rootUserPasswordFile
   set_fact:
     frds_command_line_options: "{{ frds_command_line_options + [ '--rootUserPasswordFile ' + frds_ds_config_root_user_password_file ]  }}"
@@ -120,7 +120,9 @@
 - name: add monitorUserPassword
   set_fact:
     frds_command_line_options: "{{ frds_command_line_options + [ '--monitorUserPassword '+ frds_ds_config_monitor_user_password ]  }}"
-  when: "( frds_ds_enable_user_monitor and frds_ds_config_monitor_user_dn | length > 0 and frds_ds_config_monitor_user_password | length > 0 and  frds_ds_config_monitor_user_password_file | length == 0 )"
+  when: "( frds_ds_enable_user_monitor and frds_ds_config_monitor_user_dn | length > 0 and
+        frds_ds_config_monitor_user_password | length > 0 and
+        frds_ds_config_monitor_user_password_file | length == 0 )"
 
 - name: add keyStorePasswordFile
   set_fact:
