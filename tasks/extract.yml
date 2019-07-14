@@ -3,7 +3,7 @@
 - name: Install required packages. This takes a while - be patient
   package:
     name: "{{ item }}"
-    state: latest
+    state: present
   with_items:
     - unzip
 
