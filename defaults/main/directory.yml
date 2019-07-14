@@ -18,6 +18,7 @@ frds_ds_config_keystore_password_file: ""
 frds_ds_config_keystore_password: ""
 frds_ds_config_ldap_port: "{{ 1389 if (frds_ds_config_base_port == 0) else frds_ds_config_base_port + 389 }}" 
 frds_ds_config_ldaps_port: "{{ 1636 if (frds_ds_config_base_port == 0) else frds_ds_config_base_port + 636 }}" 
+frds_ds_config_replication_port: "{{ 8989 if (frds_ds_config_base_port == 0) else frds_ds_config_base_port + 989 }}" 
 frds_ds_config_monitor_user_dn: "uid=monitor"
 frds_ds_config_monitor_user_password_file: ""
 frds_ds_config_monitor_user_password: "{{ frds_default_password }}"
@@ -69,3 +70,15 @@ frds_ds_user: "{{ frds_fr_user }}"
 frds_ds_enable_ports_http: false
 frds_ds_enable_ports_https: true
 frds_ds_enable_user_monitor: false
+frds_ds_config_replication_admin_password: "{{ frds_default_password }}"
+frds_ds_config_replication_server1_admin_port: 4444
+frds_ds_config_replication_server1_hostname: "{{ ansible_hostname }}"
+frds_ds_config_replication_server1_admin_password: "{{ frds_default_password }}"
+frds_ds_config_replication_server1_replication_port: 8989
+frds_ds_config_replication_server2_admin_port: 4444
+frds_ds_config_replication_server2_hostname: "{{ ansible_hostname }}"
+frds_ds_config_replication_server2_admin_password: "{{ frds_default_password }}"
+frds_ds_config_replication_server2_replication_port: 8989
+frds_ds_config_replication_embedded_server: false
+frds_ds_config_replication_states:
+  - present

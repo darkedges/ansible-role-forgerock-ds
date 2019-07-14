@@ -187,6 +187,9 @@
 - include_tasks: "directory-server/configure.yml"
   when: "( frds_install_operation == 'configure' and frds_install_type == 'directory-server' )"
 
+- include_tasks: "directory-server/replication.yml"
+  when: "( frds_install_operation == 'replication' and frds_ds_config_replication_embedded_server and frds_install_type == 'directory-server' )"
+
 - include_tasks: "replication-server/install.yml"
   when: "( frds_install_operation == 'install' and frds_install_type == 'replication-server' )"
 

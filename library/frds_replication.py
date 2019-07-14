@@ -98,13 +98,13 @@ def get_status(module, frds_bin_dir, server_hostname, server_admin_port,
     if rc == 0:
         return count == len(base_dn)
     else:
-        module.fail_json(msg="Error message: " + stderr)
+        raise Exception("Error message: " + stderr)
 
 
 def replication_configure(module, frds_bin_dir, admin_uid, admin_password, base_dn, directory_server_hostname, directory_server_admin_port,
-                          directory_server_bind_dn, replication_server_hostname, replication_server_admin_port,
+                          directory_server_bind_dn, directory_server_replication_port, replication_server_hostname, replication_server_admin_port,
                           replication_server_bind_dn, directory_server_bind_password, replication_server_bind_password,
-                          replication_server_replication_port):
+                          replication_server_replication_port, embedded_replication_server):
     configure_command = [
         frds_bin_dir + '/dsreplication',
         'configure',
@@ -116,18 +116,27 @@ def replication_configure(module, frds_bin_dir, admin_uid, admin_password, base_
         '--port1', str(directory_server_admin_port),
         '--bindDN1', directory_server_bind_dn,
         '--bindPassword1', directory_server_bind_password,
-        '--noReplicationServer1',
         '--host2', replication_server_hostname,
         '--port2', str(replication_server_admin_port),
         '--bindDN2', replication_server_bind_dn,
         '--bindPassword2', replication_server_bind_password,
         '--replicationPort2', str(replication_server_replication_port),
-        '--onlyReplicationServer2'
     ]
+
+    if (embedded_replication_server):
+        configure_command.append('--replicationPort1')
+        configure_command.append(str(directory_server_replication_port))
+    else:
+        configure_command.append('--noReplicationServer1')
+        configure_command.append('--onlyReplicationServer2')
+
     if len(base_dn) > 0:
         for basedn in base_dn:
             configure_command.append('--baseDN')
             configure_command.append(basedn)
+
+    print(configure_command)
+
     # return configure_command
     rc, stdout, stderr = module.run_command(configure_command)
     if rc == 0:
@@ -191,12 +200,15 @@ def replication_initialize(module,
         '--hostname', replication_server_hostname,
         '--port', str(replication_server_admin_port),
         '--adminUid', admin_uid,
-        '--adminPassword', admin_password,
-        '--baseDN', base_dn
+        '--adminPassword', admin_password
     ])
 
-    # return initialize_command
+    if len(base_dn) > 0:
+        for basedn in base_dn:
+            initialize_command.append('--baseDN')
+            initialize_command.append(basedn)
 
+    # return initialize_command
     rc, stdout, stderr = module.run_command(initialize_command)
     if rc == 0:
         return stdout
@@ -217,6 +229,7 @@ def run_module():
             type='str', default="cn=Directory Manager"),
         directory_server_bind_password=dict(
             type='str', required=True, no_log=True),
+        directory_server_replication_port=dict(default=8989),
         replication_server_hostname=dict(type='str', required=True),
         replication_server_admin_port=dict(type='str', required=True),
         replication_server_bind_dn=dict(
@@ -224,7 +237,9 @@ def run_module():
         replication_server_bind_password=dict(
             type='str', required=True, no_log=True),
         replication_server_replication_port=dict(default=8989),
-        state=dict(type='str', default="present")
+        state=dict(type='str', default="present"),
+        embedded_replication_server=dict(
+            type='bool', default=False)
     )
 
     # seed the result dict in the object
@@ -260,23 +275,31 @@ def run_module():
     directory_server_admin_port = module.params['directory_server_admin_port']
     directory_server_bind_dn = module.params['directory_server_bind_dn']
     directory_server_bind_password = module.params['directory_server_bind_password']
+    directory_server_replication_port = module.params['directory_server_replication_port']
     replication_server_hostname = module.params['replication_server_hostname']
     replication_server_admin_port = module.params['replication_server_admin_port']
     replication_server_bind_dn = module.params['replication_server_bind_dn']
     replication_server_bind_password = module.params['replication_server_bind_password']
     replication_server_replication_port = module.params['replication_server_replication_port']
     state = module.params['state'].lower()
+    embedded_replication_server = module.params['embedded_replication_server']
 
     # manipulate or modify the state as needed (this is going to be the
     # part where your module will do what it needs to do)
-    validate = get_status(module,
-                          frds_bin_dir=frds_bin_dir,
-                          server_hostname=directory_server_hostname,
-                          server_admin_port=directory_server_admin_port,
-                          admin_uid=admin_uid,
-                          admin_password=admin_password,
-                          base_dn=base_dn
-                          )
+    try:
+        validate = get_status(module,
+                              frds_bin_dir=frds_bin_dir,
+                              server_hostname=directory_server_hostname,
+                              server_admin_port=directory_server_admin_port,
+                              admin_uid=admin_uid,
+                              admin_password=admin_password,
+                              base_dn=base_dn
+                              )
+    except Exception as e:
+        if embedded_replication_server:
+            validate = False
+        else:
+            module.fail_json(msg=e.message)
 
     if state == 'present':
         if validate:
@@ -291,11 +314,13 @@ def run_module():
                                                      directory_server_admin_port=directory_server_admin_port,
                                                      directory_server_bind_dn=directory_server_bind_dn,
                                                      directory_server_bind_password=directory_server_bind_password,
+                                                     directory_server_replication_port=directory_server_replication_port,
                                                      replication_server_hostname=replication_server_hostname,
                                                      replication_server_admin_port=replication_server_admin_port,
                                                      replication_server_bind_dn=replication_server_bind_dn,
                                                      replication_server_bind_password=replication_server_bind_password,
-                                                     replication_server_replication_port=replication_server_replication_port)
+                                                     replication_server_replication_port=replication_server_replication_port,
+                                                     embedded_replication_server=embedded_replication_server)
             result['message'] = configure_result
             result['changed'] = True
             module.exit_json(**result)
