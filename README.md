@@ -1,5 +1,7 @@
 # Ansible Role: ForgeRock Directory Service
 
+[![Build Status](https://travis-ci.com/darkedges/ansible-role-forgerock-ds.svg?branch=master)](https://travis-ci.com/darkedges/ansible-role-forgerock-ds)
+
 This Ansible Role helps with the installation and configuration of a ForgeRock Directory Service `directory-server` instance.
 
 Although it has the options for `replication-server` and `proxy-server` they will be added a future date.
