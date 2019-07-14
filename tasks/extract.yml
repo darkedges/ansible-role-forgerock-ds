@@ -5,7 +5,7 @@
     name: "{{ item }}"
     state: latest
   with_items:
-   - unzip
+    - unzip
 
 - name: create top level software directories
   file:
@@ -34,8 +34,8 @@
   unarchive:
     src: "{{ frds_staging_dir }}/frds.zip"
     dest: "{{ frds_staging_dir }}"
-    copy: no
-    list_files: yes
+    copy: "no"
+    list_files: "yes"
     owner: "{{ frds_fr_user }}"
     creates: "{{ frds_staging_dir }}/setup"
   register: archive_contents

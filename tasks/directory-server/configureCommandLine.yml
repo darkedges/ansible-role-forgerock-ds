@@ -56,8 +56,8 @@
   set_fact:
     frds_command_line_options: "{{ frds_command_line_options + [ '--set ' + item.0.profile + '/' + item.1.paramName + ':' + item.1.value ]  }}"
   with_subelements:
-   - "{{ frds_ds_config_profiles }}"
-   - settings
+    - "{{ frds_ds_config_profiles }}"
+    - settings
   when: "(  frds_ds_config_profiles_enabled )"
 
 - name: add enableStartTls

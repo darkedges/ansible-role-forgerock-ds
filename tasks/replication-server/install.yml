@@ -13,7 +13,7 @@
     owner: "{{ frds_rs_user }}"
     group: "{{ frds_rs_group }}"
     state: directory
-    recurse: yes
+    recurse: "yes"
 
 - include: configureCommandLine.yml
 
@@ -49,12 +49,12 @@
 
 - name: Enable opends service - CentOS/RHEL 6
   service:
-    name: "{{ frds_ds_service_name }}"
-    enabled: no
+    name: "{{ frds_rs_service_name }}"
+    enabled: "no"
   when: ansible_distribution_major_version == '6'
 
 - name: Enable opends service - CentOS/RHEL 7
   service:
-    name: "{{ frds_ds_service_name }}.service"
-    enabled: no
+    name: "{{ frds_rs_service_name }}.service"
+    enabled: "no"
   when: ansible_distribution_major_version == '7'

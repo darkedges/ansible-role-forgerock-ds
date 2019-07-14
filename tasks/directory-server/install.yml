@@ -1,7 +1,5 @@
 ---
 
-
-
 - name: Check that the db directory exists
   stat:
     path: "{{ frds_ds_config_instance_path }}/db"
@@ -28,7 +26,7 @@
     owner: "{{ frds_ds_user }}"
     group: "{{ frds_ds_group }}"
     state: directory
-    recurse: yes
+    recurse: "yes"
 
 - include_tasks: configureCommandLine.yml
   when: "not frds_ds_installed"
