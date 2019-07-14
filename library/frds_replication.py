@@ -135,8 +135,6 @@ def replication_configure(module, frds_bin_dir, admin_uid, admin_password, base_
             configure_command.append('--baseDN')
             configure_command.append(basedn)
 
-    print(configure_command)
-
     # return configure_command
     rc, stdout, stderr = module.run_command(configure_command)
     if rc == 0:

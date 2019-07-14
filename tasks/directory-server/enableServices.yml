@@ -1,0 +1,15 @@
+---
+
+- name: Enable opends service - CentOS/RHEL 6
+  service: 
+    name: "{{ frds_ds_service_name }}"
+    enabled: yes
+    state: started
+  when: ansible_distribution_major_version == '6'
+
+- name: Enable opends service - CentOS/RHEL 7
+  service: 
+    name: "{{ frds_ds_service_name }}.service"
+    enabled: yes
+    state: started
+  when: ansible_distribution_major_version == '7'  

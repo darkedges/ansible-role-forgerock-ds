@@ -1,104 +1,5 @@
 ---
 
-# - name: create replication agreement for dsmaster
-#   frds_replication:
-#     admin_password: "Passw0rd"
-#     base_dn:  
-#       - "ou=identities"
-#       - "ou=am-config"
-#       - "ou=tokens"
-#     directory_server_admin_port: 1444 
-#     directory_server_bind_password: "{{ frds_default_password }}"
-#     directory_server_hostname: "{{ frds_ds_config_hostname }}"
-#     frds_bin_dir: "/opt/ois/frds/rsmaster/bin"
-#     replication_server_admin_port: 3444
-#     replication_server_bind_password: "{{ frds_default_password }}"
-#     replication_server_hostname: "{{ frds_rs_config_hostname }}"
-#     replication_server_replication_port: 3989
-#     state: present
-
-# - name: create replication agreement for dsreplica
-#   frds_replication:
-#     admin_password: "Passw0rd"
-#     base_dn:   
-#       - "ou=identities"
-#       - "ou=am-config"
-#       - "ou=tokens"
-#     directory_server_admin_port: 2444 
-#     directory_server_bind_password: "{{ frds_default_password }}"
-#     directory_server_hostname: "{{ frds_ds_config_hostname }}"
-#     frds_bin_dir: "/opt/ois/frds/dsreplica/bin"
-#     replication_server_admin_port: 4444
-#     replication_server_bind_password: "{{ frds_default_password }}"
-#     replication_server_hostname: "{{ frds_rs_config_hostname }}"
-#     replication_server_replication_port: 4989
-#     state: present
-
-# - name: initialize all replication agreements
-#   frds_replication:
-#     admin_password: "Passw0rd"
-#     base_dn:  "ou=identities"
-#     directory_server_admin_port: 1444 
-#     directory_server_bind_password: "{{ frds_default_password }}"
-#     directory_server_hostname: "{{ frds_ds_config_hostname }}"
-#     frds_bin_dir: "/opt/ois/frds/dsmaster/bin"
-#     replication_server_admin_port: 3444
-#     replication_server_bind_password: "{{ frds_default_password }}"
-#     replication_server_hostname: "{{ frds_rs_config_hostname }}"
-#     replication_server_replication_port: 3989
-#     state: initialize-all
-
-# - name: configure Global Access Control Policy Properties
-#   frds_global_access_control_policy_prop:
-#     policy_name: "Authenticated access to {{ item }} data"
-#     frds_bin_dir: "/opt/ois/frds/proxy/bin"
-#     directory_server_admin_port: 5444 
-#     directory_server_bind_password: "{{ frds_default_password }}"
-#     directory_server_hostname: "{{ frds_ds_config_hostname }}"
-#     state: present
-#     properties:
-#       allowed-attribute:
-#         - "*"
-#         - "isMemberOf"
-#       allowed-attribute-exception:
-#         - "authPassword"    
-#         - "userPassword"
-#       allowed-control:
-#         - "Assertion"     
-#         - "AuthorizationIdentity"  
-#         - "Noop"
-#         - "PasswordPolicy"
-#         - "PermissiveModify"
-#         - "PersistentSearch"      
-#         - "PostRead"  
-#         - "PreRead"
-#         - "ProxiedAuthV2"  
-#         - "RealAttributesOnly"
-#         - "ServerSideSort"
-#         - "SimplePagedResults"    
-#         - "TransactionId" 
-#         - "VirtualAttributesOnly" 
-#         - "Vlv"
-#       allowed-extended-operation:
-#         - "PasswordModify"  
-#         - "PasswordPolicyState"    
-#         - "StartTls"       
-#         - "WhoAmI"
-#       authentication-required:  "true"
-#       connection-minimum-ssf:  "0"
-#       permission: 
-#         - "read"
-#         - "write"
-#       request-target-dn-equal-to:
-#         - "**,{{ item }}"       
-#         - "{{ item }}"
-#       request-target-dn-equal-to-user-dn: "false"
-#   loop:
-#     - "ou=identities"
-#     - "ou=am-config"
-#     - "ou=tokens"
-
-
 - name: check if replication server is not amaster
   fail: 
     msg: "You must supply 'frds_rs_config_replication_server' details"
@@ -141,54 +42,24 @@
           frds_ps_config_replication_server | length > 0 and ( frds_ps_config_replication_bind_dn | length > 0 and ( frds_ps_config_replication_bind_password | length == 0 and frds_ps_config_replication_bind_password_file | length == 0 ) )
         )"
 
-- name: Install required packages. This takes a while - be patient
-  package: 
-    name: "{{ item }}"
-    state: latest
-  with_items:
-   - unzip
-
-- name: create top level software directories
-  file: 
-    path: "{{ item }}" 
-    state: directory 
-    owner: "{{ frds_fr_user }}" 
-    group: "{{ frds_fr_group }}" 
-    mode: 0755
-  loop:
-    - "{{ frds_install_path }}" 
-    - "{{ frds_instance_path }}"
-    - "{{ frds_staging_dir }}" 
-
-- name: upload staging files
-  copy:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-    owner: "{{ frds_fr_user }}"
-    group: "{{ frds_fr_group }}" 
-    mode: 0755 
-  loop:
-    - src: "{{ frds_install_file }}"
-      dest: "{{ frds_staging_dir }}/frds.zip" 
-
-- name: unarchive
-  unarchive: 
-    src: "{{ frds_staging_dir }}/frds.zip" 
-    dest: "{{ frds_staging_dir }}" 
-    copy: no      
-    list_files: yes
-    owner: "{{ frds_fr_user }}"
-    creates: "{{ frds_staging_dir }}/setup"
-  register: archive_contents
+- include_tasks: "extract.yml"
+  when: frds_install_operation == 'install' 
 
 - include_tasks: "directory-server/install.yml"
-  when: "( frds_install_operation == 'install' and frds_install_type == 'directory-server' )"
+  when: frds_install_operation == 'install' and 
+        frds_install_type == 'directory-server'
 
 - include_tasks: "directory-server/configure.yml"
-  when: "( frds_install_operation == 'configure' and frds_install_type == 'directory-server' )"
+  when: frds_install_operation in ['configure', 'install'] and 
+        frds_install_type == 'directory-server'
+
+- include_tasks: "directory-server/enableServices.yml"
+  when: frds_install_type == 'directory-server'
 
 - include_tasks: "directory-server/replication.yml"
-  when: "( frds_install_operation == 'replication' and frds_ds_config_replication_embedded_server and frds_install_type == 'directory-server' )"
+  when: frds_install_operation == 'replication' and 
+        frds_ds_config_replication_embedded_server and 
+        frds_install_type == 'directory-server'
 
 - include_tasks: "replication-server/install.yml"
   when: "( frds_install_operation == 'install' and frds_install_type == 'replication-server' )"

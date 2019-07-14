@@ -1,0 +1,41 @@
+---
+
+- name: Install required packages. This takes a while - be patient
+  package: 
+    name: "{{ item }}"
+    state: latest
+  with_items:
+   - unzip
+
+- name: create top level software directories
+  file: 
+    path: "{{ item }}" 
+    state: directory 
+    owner: "{{ frds_fr_user }}" 
+    group: "{{ frds_fr_group }}" 
+    mode: 0755
+  loop:
+    - "{{ frds_install_path }}" 
+    - "{{ frds_instance_path }}"
+    - "{{ frds_staging_dir }}" 
+
+- name: upload staging files
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ frds_fr_user }}"
+    group: "{{ frds_fr_group }}" 
+    mode: 0755 
+  loop:
+    - src: "{{ frds_install_file }}"
+      dest: "{{ frds_staging_dir }}/frds.zip" 
+
+- name: unarchive
+  unarchive: 
+    src: "{{ frds_staging_dir }}/frds.zip" 
+    dest: "{{ frds_staging_dir }}" 
+    copy: no      
+    list_files: yes
+    owner: "{{ frds_fr_user }}"
+    creates: "{{ frds_staging_dir }}/setup"
+  register: archive_contents

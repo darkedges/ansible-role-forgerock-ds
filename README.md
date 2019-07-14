@@ -244,6 +244,73 @@ This use default values
         - "initialize-all"
 ```
 
+### Putting it all togethor
+
+```bash
+- hosts: frds
+  vars:
+    frds_install_path: "/opt/forgerock/frds"
+    frds_instance_path: "/var/forgerock/frds"
+    frds_version: 6.5.0
+  roles:
+    - role: forgerock.user
+    - role: forgerock.ds
+      become: yes
+      frds_ds_service_name: "dsmaster"
+      frds_ds_config_base_port: 1000
+      frds_ds_config_profiles:
+        - profile: "am-identity-store"
+          version: "{{ frds_version }}"
+          settings:
+            - paramName: "backendName"
+              value: "amIdentityStore"
+            - paramName: "amIdentityStoreAdminPassword"
+              value: "{{ frds_default_password }}"
+        - profile: "am-config"
+          version: "{{ frds_version }}"
+          settings:
+            - paramName: "backendName"
+              value: "cfgStore"
+            - paramName: "amConfigAdminPassword"
+              value: "{{ frds_default_password }}"
+            - paramName: "baseDn"
+              value: "ou=am-config"
+        - profile: "am-cts"
+          version: "{{ frds_version }}"
+          settings:
+            - paramName: "backendName"
+              value: "amCts"
+            - paramName: "amCtsAdminPassword"
+              value: "{{ frds_default_password }}"
+            - paramName: "tokenExpirationPolicy"
+              value: "am"
+    - role: forgerock.ds
+      become: yes
+      frds_ds_service_name: "dsreplica"
+      frds_ds_config_base_port: 2000
+      frds_ds_config_base_dns:
+        - "ou=identities"
+        - "ou=am-config"
+        - "ou=tokens"
+    - role: forgerock.ds
+      become: yes
+      frds_install_operation: "replication"
+      frds_ds_service_name: "dsmaster"
+      frds_ds_config_replication_embedded_server: true
+      frds_ds_config_replication_server1_admin_port: 1444
+      frds_ds_config_replication_server1_replication_port: 1989
+      frds_ds_config_replication_server2_admin_port: 2444
+      frds_ds_config_replication_server2_replication_port: 2989
+      frds_ds_config_replication_initialize: true
+      frds_ds_config_base_dns: 
+        - "ou=identities"
+        - "ou=am-config"
+        - "ou=tokens"
+      frds_ds_config_replication_states: 
+        - "present"
+        - "initialize-all"
+```
+
 ## License
 
 Copyright © 2019 [DarkEdges](https://bitbucket.org/darkedges).  
