@@ -16,7 +16,7 @@ install:
 before_script:
   # Use actual Ansible Galaxy role name for the project directory.
   - cd ../
-  - mv ansible-role-$ROLE_NAME darkedges.$ROLE_NAME
+  - mv ansible-role-$GIT_REPO darkedges.$ROLE_NAME
   - cd darkedges.$ROLE_NAME
 
 script:
