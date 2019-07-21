@@ -45,7 +45,7 @@
     src: "etc/systemd/system/opends.service.j2"
     dest: "/etc/systemd/system/{{ frds_ds_service_name }}.service"
     mode: 0755
-  when: ansible_distribution_major_version == '7'
+  when: ansible_distribution_major_version >= '7'
 
 - name: Enable opends service - CentOS/RHEL 6
   service:
@@ -57,4 +57,4 @@
   service:
     name: "{{ frds_rs_service_name }}.service"
     enabled: "no"
-  when: ansible_distribution_major_version == '7'
+  when: ansible_distribution_major_version >= '7'
